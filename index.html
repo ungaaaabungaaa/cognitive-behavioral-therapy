@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="A small, local reflection journal. Notice a thought, check the evidence, and make room for another view.">
+<meta name="color-scheme" content="light">
+<title>Room to Think — a reflection journal</title>
+<link rel="stylesheet" href="/src/styles.css"><script type="module" src="/src/app.mjs"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to journal</a>
+<div class="app-shell">
+<header class="sidebar">
+  <a class="brand" href="#today" aria-label="Room to Think home"><span class="brand-mark" aria-hidden="true">r.</span><span>room to think<span class="brand-sub">A little space for perspective.</span></span></a>
+  <nav aria-label="Main navigation">
+    <button type="button" data-view="today" class="nav-button active" aria-current="page"><span aria-hidden="true">01</span> Today</button>
+    <button type="button" data-view="journal" class="nav-button"><span aria-hidden="true">02</span> My journal <span id="nav-count" class="nav-count">0</span></button>
+    <button type="button" data-view="progress" class="nav-button"><span aria-hidden="true">03</span> Looking back</button>
+    <button type="button" data-view="privacy" class="nav-button"><span aria-hidden="true">04</span> Data & privacy</button>
+  </nav>
+  <aside class="sidebar-note"><span class="eyebrow">A gentle reminder</span><p>You do not have to solve everything in one sitting.</p><span class="hand-rule" aria-hidden="true"></span></aside>
+  <p class="local-label"><span class="dot" aria-hidden="true"></span> Saved in this browser only</p>
+</header>
+<main id="main" tabindex="-1">
+  <div class="topline"><span id="today-date"></span><span class="prototype">Self-help prototype</span></div>
+  <div id="status" role="status" aria-live="polite" class="status" hidden></div>
+  <section id="view-today" aria-labelledby="today-heading">
+    <div class="hero"><span class="eyebrow">YOUR DAILY PAUSE</span><h1 id="today-heading">Make room for<br><em>another view.</em></h1><p>A thought can feel like a fact. Take a moment to notice it, look at the evidence, and find a more balanced view.</p></div>
+    <div class="exercise-grid">
+      <article class="exercise-card thought-card"><div class="card-top"><span class="eyebrow">01 / REFLECT</span><span class="time">About 10 minutes</span></div><h2>Untangle a thought</h2><p>Bring one situation into focus. Explore what happened, what you felt, and what else could be true.</p><button id="start-thought" class="primary" type="button">Start a thought record <span aria-hidden="true">↗</span></button></article>
+      <article class="exercise-card action-card"><div class="card-top"><span class="eyebrow">02 / TRY</span><span class="time">At your own pace</span></div><h2>Take one small step</h2><p>Choose an ordinary, manageable activity. Note what you expect, then come back to see how it went.</p><button id="start-action" class="secondary" type="button">Plan a small action <span aria-hidden="true">↗</span></button></article>
+    </div>
+    <section class="recent-section" aria-labelledby="recent-heading"><div class="section-heading"><h2 id="recent-heading">Your last reflection</h2><button type="button" data-view="journal" class="text-button">Open journal →</button></div><div id="recent-entry"></div></section>
+    <p class="boundary-note">A place for reflection, without diagnosis or treatment advice. This tool has no therapist or AI. If you need support, contact a qualified professional. If you are in immediate danger, contact local emergency services.</p>
+  </section>
+  <section id="view-editor" hidden aria-labelledby="editor-heading">
+    <button type="button" id="back-editor" class="text-button">← Back to today</button>
+    <div class="page-intro"><span class="eyebrow" id="editor-kicker">A THOUGHT RECORD</span><h1 id="editor-heading">One thought at a time.</h1><p id="editor-intro">Write as much or as little as you need. Each field has a 2000-character limit. Only Save adds it to your journal.</p></div>
+    <form id="entry-form">
+      <label class="field date-field">Date<input type="date" name="date" required></label>
+      <div id="thought-fields">
+        <fieldset class="form-section"><legend><span>01</span> Notice what happened</legend>
+          <label class="field">What was the situation?<textarea name="situation" rows="3" maxlength="2000" required placeholder="Where were you? What happened?"></textarea></label>
+          <div class="field-pair"><label class="field">What feeling did you notice?<input name="emotion" maxlength="2000" required placeholder="For example: worried, sad, frustrated"></label><label class="field">How strong was that feeling? (0–100)<input type="number" name="thoughtBefore" min="0" max="100" step="1" required placeholder="0 = none, 100 = strongest"></label></div>
+          <label class="field">What thought went through your mind?<textarea name="thought" rows="3" maxlength="2000" required placeholder="Try writing the exact words you told yourself."></textarea></label>
+        </fieldset>
+        <fieldset class="form-section"><legend><span>02</span> Look at the evidence</legend><p class="field-hint">Describe observations. You do not need to force a positive answer.</p>
+          <label class="field">What supports this thought?<textarea name="evidenceFor" rows="3" maxlength="2000" required></textarea></label>
+          <label class="field">What does not support it, or suggests another view?<textarea name="evidenceAgainst" rows="3" maxlength="2000" required></textarea></label>
+        </fieldset>
+        <fieldset class="form-section"><legend><span>03</span> Make room for perspective</legend>
+          <label class="field">What is a more balanced way to see this?<textarea name="balanced" rows="3" maxlength="2000" required placeholder="What would you say to a friend in the same situation?"></textarea></label>
+          <label class="field">How strong is the same feeling now? (optional, 0–100)<input type="number" name="thoughtAfter" min="0" max="100" step="1" placeholder="It can be lower, higher, or the same."></label>
+        </fieldset>
+      </div>
+      <div id="action-fields" hidden>
+        <fieldset class="form-section"><legend><span>01</span> Choose a manageable step</legend>
+          <label class="field">What small activity would you like to try?<textarea name="activity" rows="3" maxlength="2000" required placeholder="Something ordinary, such as a short walk or messaging a friend."></textarea></label>
+          <label class="field">When or where will you try it?<input name="when" maxlength="2000" required placeholder="Make the plan specific and realistic."></label>
+          <label class="field">What do you expect?<textarea name="prediction" rows="3" maxlength="2000" required></textarea></label>
+          <label class="field">How strong is your chosen difficult feeling now? (0–100)<input type="number" name="actionBefore" min="0" max="100" step="1" required></label>
+        </fieldset>
+        <fieldset class="form-section"><legend><span>02</span> Return after you try</legend><p class="field-hint">Leave both fields empty to save a plan. Edit it later to add your outcome.</p>
+          <label class="field">What happened? (optional)<textarea name="outcome" rows="3" maxlength="2000"></textarea></label>
+          <label class="field">How strong is the same feeling now? (0–100, with outcome)<input type="number" name="actionAfter" min="0" max="100" step="1"></label>
+        </fieldset>
+      </div>
+      <div class="form-footer"><span>Stays in this browser. Not encrypted.</span><div><button type="button" id="cancel-edit" class="secondary">Cancel</button><button type="submit" class="primary" id="save-entry">Save reflection</button></div></div>
+    </form>
+  </section>
+  <section id="view-journal" hidden aria-labelledby="journal-heading"><div class="page-intro"><span class="eyebrow">YOUR OWN WORDS</span><h1 id="journal-heading">My journal.</h1><p>A record of moments you made space for. Open an entry to revisit or edit it.</p></div><div class="journal-toolbar"><label class="field">Show<select id="journal-filter"><option value="all">All entries</option><option value="thought">Thought records</option><option value="action">Small actions</option></select></label><button id="journal-new" class="primary" type="button">New thought record +</button></div><div id="journal-list"></div></section>
+  <section id="view-progress" hidden aria-labelledby="progress-heading"><div class="page-intro"><span class="eyebrow">NOTICE, WITHOUT JUDGMENT</span><h1 id="progress-heading">Looking back.</h1><p>These are descriptions of your own entries. They are not a mental health score, a diagnosis, or proof of improvement.</p></div><div id="progress-content"></div></section>
+  <section id="view-privacy" hidden aria-labelledby="privacy-heading"><div class="page-intro"><span class="eyebrow">YOUR DATA, YOUR CHOICE</span><h1 id="privacy-heading">A private space<br>needs clear limits.</h1><p>No account. No analytics. No journal uploads.</p></div>
+    <div class="privacy-copy"><h2>Where your journal lives</h2><p>Saved entries stay in this browser's local storage, for this exact site address and port. They are <strong>not encrypted</strong>. Anyone with access to your browser profile may be able to read them. Use a private device.</p><p>Clearing site data, using private browsing, changing the address or port, or losing this device can remove access to your journal. Unsaved form text is not stored. Make your own backups.</p><h2>Keep a copy</h2><p>A backup is a plain JSON file, not encrypted. Store it somewhere you trust. Exports can contain sensitive personal text.</p><button type="button" id="export-data" class="primary">Download journal backup ↓</button><button type="button" id="export-raw" class="secondary" hidden>Download unreadable saved data</button>
+    <h2>Restore a backup</h2><p>Import previews the number of entries before replacement. A supported backup is at most 1 MiB and 200 entries. Replacing your journal removes the current entries from this browser. Export them first if you want to keep them.</p><label class="field">Choose a Room to Think JSON backup<input id="import-file" type="file" accept=".json,application/json"></label><div id="import-preview" hidden><p id="import-summary"></p><button type="button" id="confirm-import" class="secondary">Replace journal with this backup</button><button type="button" id="cancel-import" class="text-button">Cancel import</button></div>
+    <h2>Delete this journal</h2><p>This removes saved entries at this site address. It does not delete downloaded backups. You will be asked to confirm.</p><button type="button" id="clear-data" class="danger">Delete all saved entries</button>
+    <h2>About the exercises</h2><p>These original prompts draw on NHS explanations of thought records and reframing. This prototype is unsupervised and has not been clinically evaluated. It does not provide the trained practitioner support described in formal guided self-help.</p><ul><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/thought-record/" target="_blank" rel="noopener noreferrer">NHS: thought record</a></li><li><a href="https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/self-help-cbt-techniques/reframing-unhelpful-thoughts/" target="_blank" rel="noopener noreferrer">NHS: reframing unhelpful thoughts</a></li><li><a href="https://www.nice.org.uk/guidance/ng222/chapter/recommendations" target="_blank" rel="noopener noreferrer">NICE NG222: treatment and guided self-help</a></li></ul></div>
+  </section>
+  <footer class="main-footer"><span>Room to Think</span><span>One moment. A little perspective.</span></footer>
+</main>
+</div>
+<dialog id="confirm-dialog"><form method="dialog"><h2 id="confirm-title">Confirm change</h2><p id="confirm-message"></p><div class="dialog-actions"><button class="secondary" value="cancel">Keep current data</button><button class="danger" id="confirm-yes" value="confirm">Confirm</button></div></form></dialog>
+</body>
+</html>
