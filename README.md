@@ -1,5 +1,9 @@
 # Cognitive Behavioral Therapy — Room to Think
 
+![Cognitive Behavioral Therapy line-art concept](docs/images/project-cover.png)
+
+*Generated line-art concept illustration.*
+
 A small CBT-informed reflection journal that runs in your browser. Write a thought record, plan a manageable activity, revisit saved entries, and look back at your own feeling ratings. No account, model, API key, or runtime dependency is needed.
 
 **This is an unsupervised self-help prototype.** It has no therapist or AI, does not diagnose or assess a mental health condition, and has not been clinically evaluated. It does not establish the therapeutic claims previously shown in a portfolio description. If you need support, contact a qualified professional. For immediate danger, contact local emergency services.
