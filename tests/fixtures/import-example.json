@@ -1,0 +1,21 @@
+{
+  "format": "room-to-think",
+  "version": 1,
+  "entries": [
+    {
+      "id": "603094f1-de11-4f10-9fc3-79e1d538c678",
+      "type": "thought",
+      "date": "2026-10-27",
+      "createdAt": "2026-10-27T10:00:00.000Z",
+      "updatedAt": "2026-10-27T10:00:00.000Z",
+      "before": 60,
+      "after": 30,
+      "situation": "Synthetic import test: <img src=x onerror=alert(1)>",
+      "emotion": "Worried",
+      "thought": "This text must remain text.",
+      "evidenceFor": "The fixture contains markup.",
+      "evidenceAgainst": "The app renders through text nodes.",
+      "balanced": "Imported text does not become page markup."
+    }
+  ]
+}
