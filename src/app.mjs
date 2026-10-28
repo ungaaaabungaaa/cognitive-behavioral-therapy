@@ -1,4 +1,4 @@
-import { JournalStore, makeBackup, parseBackup, summarize, searchEntries, STORAGE_KEY, MAX_BYTES } from './model.mjs';
+import { JournalStore, makeBackup, parseBackup, summarize, searchEntries, updateSavedJournal, STORAGE_KEY, MAX_BYTES } from './model.mjs';
 const $ = selector => document.querySelector(selector);
 const form=$('#entry-form');
 form.autocomplete='off';
@@ -120,11 +120,12 @@ $('#import-file').addEventListener('change',async event=>{
 });
 $('#confirm-import').addEventListener('click',async()=>{
  if(pendingImport===null)return;
+ let expectedRaw;try{expectedRaw=window.localStorage.getItem(STORAGE_KEY);}catch{message('Could not read browser storage before replacement.',true);return;}
  if(!await confirmChange('Replace this journal?',`Replace the current journal with ${pendingImport.length} entries? Export the current journal first if you want to keep it.`,'Replace journal'))return;
- try{if(!store){window.localStorage.setItem(STORAGE_KEY,makeBackup(pendingImport));store=new JournalStore(window.localStorage);}else store.replace(pendingImport);storageFailure='';pendingImport=null;$('#import-preview').hidden=true;$('#import-file').value='';render();message('Backup restored in this browser.');}catch(error){message(error.message,true);}
+ try{updateSavedJournal(window.localStorage,expectedRaw,pendingImport);store=new JournalStore(window.localStorage);storageFailure='';pendingImport=null;$('#import-preview').hidden=true;$('#import-file').value='';render();message('Backup restored in this browser.');}catch(error){message(error.message,true);}
 });
 $('#cancel-import').addEventListener('click',()=>{pendingImport=null;$('#import-file').value='';$('#import-preview').hidden=true;});
-$('#clear-data').addEventListener('click',async()=>{if(!await confirmChange('Delete all saved entries?','This permanently removes this journal from this browser. It cannot be undone here. Downloaded backups are unaffected.','Delete all entries'))return;try{window.localStorage.removeItem(STORAGE_KEY);store=new JournalStore(window.localStorage);storageFailure='';pendingImport=null;$('#import-preview').hidden=true;render();message('Saved entries deleted from this browser.');}catch(error){message(error.message,true);}});
+$('#clear-data').addEventListener('click',async()=>{let expectedRaw;try{expectedRaw=window.localStorage.getItem(STORAGE_KEY);}catch{message('Could not read browser storage before deletion.',true);return;}if(!await confirmChange('Delete all saved entries?','This permanently removes this journal from this browser. It cannot be undone here. Downloaded backups are unaffected.','Delete all entries'))return;try{updateSavedJournal(window.localStorage,expectedRaw,null);store=new JournalStore(window.localStorage);storageFailure='';pendingImport=null;$('#import-preview').hidden=true;render();message('Saved entries deleted from this browser.');}catch(error){message(error.message,true);}});
 for(const nav of document.querySelectorAll('[data-view]'))nav.addEventListener('click',()=>showView(nav.dataset.view));
 $('.brand').addEventListener('click',event=>{event.preventDefault();showView('today');});
 $('#start-thought').addEventListener('click',()=>openEditor('thought'));

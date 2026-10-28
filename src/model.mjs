@@ -57,6 +57,17 @@ export function summarize(entries) {
   const days=[...new Set(entries.map(entry=>entry.date))].sort().map(date=>({date,count:entries.filter(entry=>entry.date===date).length}));
   return {total:entries.length,thoughts:thoughts.length,actions:actions.length,completedActions:actions.filter(entry=>entry.after!==null).length,paired:paired.length,averageChange:paired.length?paired.reduce((sum,entry)=>sum+entry.before-entry.after,0)/paired.length:null,days};
 }
+// A null replacement deletes the key. Capture expectedRaw before asking for confirmation.
+export function updateSavedJournal(storage, expectedRaw, entries) {
+  const json=entries===null?null:makeBackup(entries);
+  let current;
+  try { current=storage.getItem(STORAGE_KEY); } catch { fail('Could not read browser storage before saving.'); }
+  if(current!==expectedRaw) fail('Journal changed in another tab. Copy any unsaved text, then reload before saving or deleting.');
+  try {
+    if(json===null)storage.removeItem(STORAGE_KEY);else storage.setItem(STORAGE_KEY,json);
+  } catch { fail('Could not save or delete. Browser storage may be full or blocked. Your previous journal remains unchanged.'); }
+  return json;
+}
 export class JournalStore {
   #entries=[];
   #storage;
@@ -72,11 +83,7 @@ export class JournalStore {
   }
   get entries() { return this.#entries.map(entry=>({...entry})); }
   replace(entries) {
-    const json=makeBackup(entries);
-    let current;
-    try { current=this.#storage.getItem(STORAGE_KEY); } catch { fail('Could not read browser storage before saving.'); }
-    if(current!==this.#lastRaw) fail('Journal changed in another tab. Copy any unsaved text, then reload before saving.');
-    try { this.#storage.setItem(STORAGE_KEY,json); } catch { fail('Could not save. Browser storage may be full or blocked. Your previous journal remains unchanged.'); }
+    const json=updateSavedJournal(this.#storage,this.#lastRaw,entries);
     this.#entries=parseBackup(json);
     this.#lastRaw=json;
   }

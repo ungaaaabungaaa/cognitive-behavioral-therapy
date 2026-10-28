@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateEntry, parseBackup, makeBackup, summarize, JournalStore, MAX_BYTES, MAX_ENTRIES, searchEntries } from '../src/model.mjs';
+import { validateEntry, parseBackup, makeBackup, summarize, JournalStore, MAX_BYTES, MAX_ENTRIES, searchEntries, updateSavedJournal, STORAGE_KEY } from '../src/model.mjs';
 const id = '303094f1-de11-4f10-9fc3-79e1d538c678';
 const id2 = '403094f1-de11-4f10-9fc3-79e1d538c678';
 const now = '2026-10-27T10:00:00.000Z';
@@ -76,4 +76,26 @@ test('journal search finds saved text and dates without changing entries',()=>{
  assert.deepEqual(searchEntries(items,'303094f1'),[]);
  assert.deepEqual(searchEntries(items,'<img'),[]);
  assert.deepEqual(items,[thought(),action()]);
+});
+
+test('confirmed replacement and deletion reject a changed storage snapshot',()=>{
+ const storage=memory();
+ const first=makeBackup([thought()]);storage.setItem(STORAGE_KEY,first);
+ const newer=makeBackup([thought(),action()]);storage.setItem(STORAGE_KEY,newer);
+ for(const replacement of [[],null]) assert.throws(()=>updateSavedJournal(storage,first,replacement),/another tab|changed/i);
+ assert.equal(storage.getItem(STORAGE_KEY),newer);
+ updateSavedJournal(storage,newer,[action()]);
+ assert.deepEqual(parseBackup(storage.getItem(STORAGE_KEY)),[action()]);
+ const current=storage.getItem(STORAGE_KEY);
+ updateSavedJournal(storage,current,null);
+ assert.equal(storage.getItem(STORAGE_KEY),null);
+});
+test('unreadable data recovery needs the exact confirmed snapshot and failed deletion preserves it',()=>{
+ const storage=memory();storage.setItem(STORAGE_KEY,'broken');
+ assert.throws(()=>updateSavedJournal(storage,'old broken',[]),/changed/i);
+ assert.equal(storage.getItem(STORAGE_KEY),'broken');
+ assert.throws(()=>updateSavedJournal({...storage,removeItem:()=>{throw Error('blocked');}},'broken',null),/save|delete/i);
+ assert.equal(storage.getItem(STORAGE_KEY),'broken');
+ updateSavedJournal(storage,'broken',[]);
+ assert.deepEqual(parseBackup(storage.getItem(STORAGE_KEY)),[]);
 });
