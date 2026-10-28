@@ -99,3 +99,13 @@ test('unreadable data recovery needs the exact confirmed snapshot and failed del
  updateSavedJournal(storage,'broken',[]);
  assert.deepEqual(parseBackup(storage.getItem(STORAGE_KEY)),[]);
 });
+
+test('a store captured before delete confirmation cannot remove a newer edited entry',()=>{
+ const storage=memory();let active=new JournalStore(storage);active.upsert(thought());
+ const confirmedStore=active;
+ const other=new JournalStore(storage);other.upsert(thought({balanced:'A later edit from another tab.'}));
+ active=new JournalStore(storage); // the UI storage event refreshes its active store
+ assert.throws(()=>confirmedStore.remove(id),/changed|another tab/i);
+ assert.equal(active.entries[0].balanced,'A later edit from another tab.');
+ assert.equal(new JournalStore(storage).entries[0].balanced,'A later edit from another tab.');
+});

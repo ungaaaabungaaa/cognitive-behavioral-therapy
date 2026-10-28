@@ -77,7 +77,7 @@ function entryCard(entry,compact=false) {
   const toggle=button('Read full entry',()=>{detail.hidden=!detail.hidden;toggle.textContent=detail.hidden?'Read full entry':'Close entry';toggle.setAttribute('aria-expanded',String(!detail.hidden));});toggle.setAttribute('aria-expanded','false');actions.append(toggle);
  }
  actions.append(button(compact?'Revisit reflection':'Edit entry',()=>openEditor(entry.type,entry)));
- if(!compact)actions.append(button('Delete',async()=>{if(await confirmChange('Delete this entry?','This removes the entry from this browser. Downloaded backups are unaffected.','Delete entry')){try{store.remove(entry.id);render();message('Entry deleted.');}catch(error){message(error.message,true);}}},'text-button entry-delete'));
+ if(!compact)actions.append(button('Delete',async()=>{const confirmedStore=store;if(await confirmChange('Delete this entry?','This removes the entry from this browser. Downloaded backups are unaffected.','Delete entry')){try{confirmedStore.remove(entry.id);render();message('Entry deleted.');}catch(error){message(error.message,true);}}},'text-button entry-delete'));
  article.append(actions);return article;
 }
 function formatDate(value) {return new Date(`${value}T12:00:00`).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});}
