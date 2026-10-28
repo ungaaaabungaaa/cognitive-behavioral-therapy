@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateEntry, parseBackup, makeBackup, summarize, JournalStore, MAX_BYTES, MAX_ENTRIES } from '../src/model.mjs';
+import { validateEntry, parseBackup, makeBackup, summarize, JournalStore, MAX_BYTES, MAX_ENTRIES, searchEntries } from '../src/model.mjs';
 const id = '303094f1-de11-4f10-9fc3-79e1d538c678';
 const id2 = '403094f1-de11-4f10-9fc3-79e1d538c678';
 const now = '2026-10-27T10:00:00.000Z';
@@ -64,4 +64,16 @@ test('a stale browser tab cannot overwrite newer saved work',()=>{
  first.upsert(thought());
  assert.throws(()=>second.upsert(action()),/another tab|changed/i);
  assert.equal(new JournalStore(storage).entries[0].type,'thought');
+});
+
+test('journal search finds saved text and dates without changing entries',()=>{
+ const items=[thought(),action()];
+ assert.deepEqual(searchEntries(items,'  PRESENTATION  '),[items[0]]);
+ assert.deepEqual(searchEntries(items,'after lunch'),[items[1]]);
+ assert.deepEqual(searchEntries(items,'2026-10-27'),items);
+ assert.deepEqual(searchEntries(items,'   '),items);
+ assert.deepEqual(searchEntries(items,'unmatched'),[]);
+ assert.deepEqual(searchEntries(items,'303094f1'),[]);
+ assert.deepEqual(searchEntries(items,'<img'),[]);
+ assert.deepEqual(items,[thought(),action()]);
 });

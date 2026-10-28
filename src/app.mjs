@@ -1,4 +1,4 @@
-import { JournalStore, makeBackup, parseBackup, summarize, STORAGE_KEY, MAX_BYTES } from './model.mjs';
+import { JournalStore, makeBackup, parseBackup, summarize, searchEntries, STORAGE_KEY, MAX_BYTES } from './model.mjs';
 const $ = selector => document.querySelector(selector);
 const form=$('#entry-form');
 form.autocomplete='off';
@@ -86,8 +86,8 @@ function render() {
  $('#nav-count').textContent=String(all.length);
  $('#save-entry').disabled=!store;
  const recent=$('#recent-entry');recent.replaceChildren(all.length?entryCard(all[0],true):node('p','Your journal starts with a single reflection. Nothing is saved yet.','empty'));
- const filter=$('#journal-filter').value;const shown=all.filter(entry=>filter==='all'||entry.type===filter);const list=$('#journal-list');list.replaceChildren(...shown.map(entry=>entryCard(entry)));
- if(!shown.length)list.append(node('p',all.length?'No entries of this type yet.':'No entries yet. Start a thought record or plan a small action.','empty'));
+ const filter=$('#journal-filter').value;const shown=searchEntries(all.filter(entry=>filter==='all'||entry.type===filter),$('#journal-search').value);$('#journal-results').textContent=`${shown.length} of ${all.length} entries shown.`;const list=$('#journal-list');list.replaceChildren(...shown.map(entry=>entryCard(entry)));
+ if(!shown.length)list.append(node('p',all.length?'No entries match your search and type filter.':'No entries yet. Start a thought record or plan a small action.','empty'));
  renderProgress(all);
  $('#export-data').disabled=!store;
  $('#export-raw').hidden=!storageFailure;
@@ -133,4 +133,5 @@ $('#start-action').addEventListener('click',()=>openEditor('action'));
 $('#back-editor').addEventListener('click',()=>showView('today'));
 $('#cancel-edit').addEventListener('click',()=>showView('today'));
 $('#journal-filter').addEventListener('change',render);
+$('#journal-search').addEventListener('input',render);
 showView('today',false);

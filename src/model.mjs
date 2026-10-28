@@ -45,6 +45,11 @@ export function parseBackup(text) {
   if (!plain(value) || value.format !== 'room-to-think' || value.version !== 1 || Object.keys(value).sort().join(',') !== 'entries,format,version') fail('This is not a supported Room to Think backup.');
   return validateEntries(value.entries);
 }
+export function searchEntries(entries, query) {
+  const term=query.trim().toLocaleLowerCase();
+  if (!term) return entries.slice();
+  return entries.filter(entry=>[entry.date,...textKeys[entry.type].map(key=>entry[key])].some(value=>value.toLocaleLowerCase().includes(term)));
+}
 export function summarize(entries) {
   const thoughts=entries.filter(entry=>entry.type==='thought');
   const actions=entries.filter(entry=>entry.type==='action');
